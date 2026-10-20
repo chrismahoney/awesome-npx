@@ -1,120 +1,53 @@
-# awesome-npx [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome)
+# CHIPFORGE
 
-🌟 packages and resources that work really well with https://github.com/zkat/npx 🕶
-
-## ✨ npx itself is awesome
-`npx` lets you execute npm package binaries without installing them. `npx` is the last thing you need to globally install:
-`> npm i -g npx` (this command also updates npx)
-
-Now you can execute tools from npm packages without having to install them globally:
+A chiptune workstation that runs in your browser. One command, no install, no dependencies:
 
 ```
-> npx cowsay wow
-npx: installed 1 in 1.413s
- _____
-< wow >
- -----
-        \   ^__^
-         \  (oo)\_______
-            (__)\       )\/\
-                ||----w |
-                ||     ||
+npx chipforge            # once published to npm
+npx .                    # from a clone of this repo
+node cli.js --port 9000 --no-open
 ```
 
-you can even use `npx` to view this list of `awesome-npx` tools:
-```
-> npx awesome-npx
-```
+The launcher serves a single HTML page on `localhost` and opens it. Everything else (synthesis, sequencing, rendering) happens in the page with the Web Audio API.
 
+## Repository layout
 
-## 📦 packages which work well with npx:
+| Path | What it is |
+| --- | --- |
+| `app.html` | The whole studio: markup, styles, audio engine and UI in one file |
+| `cli.js` | Zero-dependency launcher for `npx` |
+| `site/` | Landing page and its screenshot |
+| `build.js` | Builds the website into `dist/` (landing page at `/`, studio at `/studio/`) |
+| `netlify.toml` | Netlify build settings (`node build.js`, publish `dist`) |
 
-## 🛠 useful
+## What's inside
 
-### [alex](https://github.com/wooorm/alex) - check text or markdown documents for insensitive or inconsiderate writing
-`npx alex README.md`
-`cat README.md | npx alex`
+**Channels modeled on 8-bit sound chips**
+- **Pulse**: 12.5 / 25 / 50 / 75% duty cycles, built from band-limited Fourier tables.
+- **Triangle**: the 32-step, 4-bit stepped triangle.
+- **Wave**: draw your own 32-sample, 4-bit wavetable, or load saw, sine, square, organ, triangle or buzz shapes.
+- **Noise**: a real 15-bit LFSR, in long (white) or short (93-step metallic) mode. Note pitch sets the noise clock.
+- **Retro drums**: kick, snare, clap, closed and open hats, two toms and crash, all synthesized from the same pulse, triangle and LFSR sources. The kit has tune, decay and crunch (bitcrush) controls.
 
-### [decode-zhuyin](https://github.com/tpai/decode-zhuyin) - decode Chinese word to Zhuyin password
-`npx decode-zhuyin <text>`
+**Instrument controls**: ADSR with optional 4-bit, 60 Hz stepped volume. Also mono/poly, glide, pitch sweep, delayed vibrato, a chord arpeggiator (octave, fifth, major, minor, sevenths and more, up to 60 Hz), transpose, per-channel bitcrusher and echo send. Every channel type ships with presets.
 
-### [goops](https://github.com/captainsafia/goops) - add gitignore rules heuristically based on files in your current directory
-`npx goops`
+**Editing**
+- Piano roll with ghost notes from the other channels, drag-to-resize and drag-to-move.
+- Drum step grid with accents and drag painting.
+- Patterns of 16, 32 or 64 steps, up to 16 patterns (A–P), and a drag-to-reorder song chain.
+- Copy/paste, transpose, rotate, and unlimited undo/redo.
+- Play from the computer keyboard (`Z`–`M`, `Q`–`U`, `[` `]` for octave) or a Web MIDI keyboard.
+- Record live while the song plays, or step-enter notes while stopped.
 
-### [http-server](https://github.com/indexzero/http-server) - run a static web server in your current directory
-`npx http-server`
+**Mixing and output**
+- Per-channel volume, pan, mute, solo and meters.
+- Master tone filter, tempo-synced echo, a compressor and an oscilloscope.
+- Swing and a metronome.
+- Projects autosave in the browser. Save and open them as `.json`.
+- **Export WAV** renders the whole song chain offline at 44.1 kHz/16-bit.
 
-### [json-server](https://github.com/typicode/json-server) - run a mock REST API server with JSON-based response configuration
-`npx json-server https://raw.githubusercontent.com/typicode/jsonplaceholder/master/data.json`
+A demo song, *Neon Cavern*, loads on first run. Press <kbd>Space</kbd>.
 
-### [NodeSchool Workshoppers](https://nodeschool.io/#workshoppers) - Learn something new!
-`npx learnyounode`
-`npx how-to-npm`
-`npx git-it`
-`npx elementary-electron`
+## License
 
-### [okimdone](https://github.com/zkat/okimdone) - execute a long-running command and be told out loud when it's done
-`npx okimdone npm install`
-
-### [pa11y](https://github.com/pa11y/pa11y) - check websites for accessibility issues
-`npx pa11y http://example.com`
-
-### [shx](https://github.com/shelljs/shx) - portable shell commands like ls, cp, rm
-`npx shx ls`
-`npx shx rm -rf /tmp`
-
-### [strip-ansi-cli](https://github.com/chalk/strip-ansi-cli) - remove terminal color codes from piped text
-`echo -e "\033[33m hello" | npx strip-ansi-cli`
-
-
-## 🐢🚀 node.js development
-
-### [dist-upgrade](https://github.com/zacanger/dist-upgrade) - install the latest global node and npm
-`npx dist-upgrade`
-
-### [npm-check](https://github.com/dylang/npm-check) - interactively update npm dependencies
-`npx npm-check`
-`npx npm-check --skip-unused --update`
-
-### [nsp](https://github.com/nodesecurity/nsp) - scan your npm project for vulnerabilities and security alerts
-`npx nsp check`
-
-### [snyk](https://github.com/snyk/snyk) - scan for vulnerabilities in your project and its dependencies and even fix them (requires account with service)
-`npx snyk test`
-`npx snyk monitor`
-
-### [sort-package-json](https://github.com/keithamus/sort-package-json) - sort your package.json keys
-`npx sort-package-json`
-
-
-## 😺 fun
-
-### [benny-hill](https://npm.im/benny-hill) - plays benny-hill theme music while a command is running
-`npx benny-hill npm test`
-
-### [chipforge](./chipforge) - a chiptune workstation in your browser with pulse, triangle, wave and noise synths, retro drums, a piano roll and WAV export
-`npx chipforge`
-
-### [cowsay](https://github.com/piuccio/cowsay) - adds cow ascii art to your special message
-`npx cowsay <text>`
-
-### [figlet-cli](https://github.com/patorjk/figlet-cli) - the classic multi-line ascii text generator, with font support
-`npx figlet-cli <text>`
-
-### [lolcatjs](https://github.com/robertboloc/lolcatjs) - colorful rainbow text from a file or stdin
-`echo hello | npx lolcatjs --animate` `cat /dev/urandom | base64 | npx lolcatjs`
-
-### [qrip](https://github.com/watilde/qrip) - generate QR codes in your terminal
-`npx qrip https://random.cat` `npx qrip "$(npm info qrip homepage)"`
-
-### [workin-hard](https://github.com/jshemas/workinHard) - a clone of [hackertyper.com](http://hackertyper.com/)
-`npx workin-hard`
-
-
-## 📰 articles and resources
-- [Introducing npx: an npm package runner](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b)
-- write one and we'll link it here!
-
-
-## 📇 etc
-Please read the [CONTRIBUTING.md](https://github.com/js-n/awesome-npx/blob/master/CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](https://github.com/js-n/awesome-npx/blob/master/CODE_OF_CONDUCT.md) docs. Everything in this repo is licensed [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) unless otherwise noted. Thank you for being awesome!
+CC0-1.0 (public domain).

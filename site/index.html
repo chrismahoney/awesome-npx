@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Chipforge</title>
+<meta name="description" content="A chiptune workstation in your browser: pulse, triangle, wave and noise channels, retro drums, a piano roll, a song chain and WAV export. Nothing to install.">
+<meta property="og:title" content="Chipforge">
+<meta property="og:description" content="Write 8-bit music in your browser. Sound-chip synths, retro drums, piano roll and WAV export.">
+<meta property="og:image" content="/screenshot.png">
+<meta name="theme-color" content="#12101b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Martian+Mono:wght@400;600&family=Silkscreen&display=swap">
+<style>
+/* Layout: one centered column like a console manual. Hero with the live screen, then the five channels, then workflow, then the one command. */
+:root {
+  --bg: #12101b;
+  --bezel: #1a1726;
+  --panel: #201c2f;
+  --panel-2: #29243c;
+  --line: #3b3456;
+  --fg: #efe8d8;
+  --muted: #a49cbd;
+  --dim: #6e6789;
+  --accent: #ffb547;
+  --accent-ink: #2b1a00;
+  --ch-p1: #ff7a5c;
+  --ch-tri: #46d3c0;
+  --ch-wave: #8ea6ff;
+  --ch-noise: #ff7ac8;
+  --ch-drum: #8be07a;
+  --f-display: "Silkscreen", "Courier New", monospace;
+  --f-ui: "Chakra Petch", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-num: "Martian Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.6 var(--f-ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+
+header.top { border-bottom: 1px solid var(--line); background: var(--bezel); }
+header.top .wrap { display: flex; align-items: center; gap: 20px; padding-block: 14px; flex-wrap: wrap; }
+.logo { font-family: var(--f-display); font-size: 22px; color: var(--accent); text-decoration: none; letter-spacing: .04em; text-shadow: 0 0 12px rgba(255,181,71,.45); }
+nav { display: flex; gap: 18px; margin-left: auto; flex-wrap: wrap; align-items: center; }
+nav a { color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500; }
+nav a:hover { color: var(--fg); }
+
+.btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 8px; padding: 11px 18px; font: 600 16px var(--f-ui); text-decoration: none; border: 1px solid var(--line); background: var(--panel-2); color: var(--fg); cursor: pointer; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.07); }
+nav .btn { padding: 7px 14px; font-size: 14px; }
+
+.hero { padding-block: 72px 40px; }
+.hero h1 { font-family: var(--f-display); font-weight: 400; font-size: clamp(34px, 6vw, 64px); line-height: 1.08; margin: 0 0 20px; max-width: 16ch; text-wrap: balance; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.lede { font-size: 20px; color: var(--muted); max-width: 58ch; margin: 0 0 30px; }
+.ctas { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.cmd { font-family: var(--f-num); font-size: 15px; background: #0b0a10; border: 1px solid var(--line); border-radius: 8px; padding: 11px 14px; color: var(--accent); display: inline-flex; gap: 12px; align-items: center; }
+.cmd button { background: none; border: 0; color: var(--muted); font: 600 12px var(--f-ui); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; padding: 0; }
+.cmd button:hover { color: var(--fg); }
+
+.screen { margin-top: 48px; background: var(--bezel); border: 1px solid var(--line); border-radius: 14px; padding: 12px; box-shadow: 0 30px 80px -30px rgba(0,0,0,.8), 0 0 0 6px #0d0b14; }
+.screen img { display: block; width: 100%; height: auto; border-radius: 6px; }
+.screen figcaption { font-size: 13px; color: var(--dim); padding: 10px 4px 0; }
+
+section { padding-block: 64px; }
+.eyebrow { font-family: var(--f-display); font-size: 12px; letter-spacing: .14em; color: var(--muted); margin: 0 0 10px; }
+h2 { font-family: var(--f-display); font-weight: 400; font-size: clamp(24px, 3.4vw, 34px); margin: 0 0 14px; text-wrap: balance; }
+.intro { color: var(--muted); max-width: 62ch; margin: 0 0 36px; }
+
+.channels { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.ch { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.ch canvas { width: 100%; height: 70px; display: block; background: #0b0a10; border-radius: 6px; }
+.ch h3 { margin: 0; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+.ch h3 i { width: 10px; height: 10px; border-radius: 2px; background: var(--c); box-shadow: 0 0 8px var(--c); }
+.ch p { margin: 0; font-size: 15px; color: var(--muted); }
+.spec { font-family: var(--f-num); font-size: 11px; color: var(--c); letter-spacing: .02em; }
+
+.feats { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px 40px; }
+.feat h3 { margin: 0 0 6px; font-size: 18px; }
+.feat p { margin: 0; color: var(--muted); font-size: 15px; }
+kbd { font-family: var(--f-num); font-size: 12px; background: var(--panel-2); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; color: var(--fg); }
+
+.local { background: var(--bezel); border-block: 1px solid var(--line); }
+.local .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+pre { margin: 0; background: #0b0a10; border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; overflow-x: auto; font: 14px/1.8 var(--f-num); color: var(--fg); }
+pre .c { color: var(--dim); }
+pre .p { color: var(--accent); }
+
+footer { padding-block: 36px 48px; color: var(--dim); font-size: 14px; }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; }
+
+@media (max-width: 760px) {
+  .hero { padding-block: 44px 24px; }
+  .local .grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  nav a:not(.btn) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="/">CHIPFORGE</a>
+    <nav aria-label="Main">
+      <a href="#channels">Channels</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#local">Run locally</a>
+      <a class="btn primary" href="/studio/">Open the studio</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <h1>Write <em>8-bit music</em> in your browser.</h1>
+    <p class="lede">Chipforge is a chiptune workstation with four sound-chip channels, a retro drum machine, a piano roll, a song chain and WAV export. It runs entirely in the page. Nothing to install, no account.</p>
+    <div class="ctas">
+      <a class="btn primary" href="/studio/">Open the studio &#9654;</a>
+      <span class="cmd"><span id="cmdText">npx chipforge</span><button type="button" id="copyCmd">Copy</button></span>
+    </div>
+    <figure class="screen" style="margin-inline:0">
+      <img src="/screenshot.png" width="1440" height="900" alt="The Chipforge studio: channel list with meters on the left, a piano roll showing the lead melody in the middle, instrument controls on the right and the song chain along the bottom.">
+      <figcaption>The demo song, <em>Neon Cavern</em>, loads the first time you open the studio. Press <kbd>Space</kbd>.</figcaption>
+    </figure>
+  </div>
+
+  <section id="channels">
+    <div class="wrap">
+      <p class="eyebrow">THE SOUND</p>
+      <h2>Five channels, modeled on the chips</h2>
+      <p class="intro">Every voice is synthesized live with the Web Audio API from the same building blocks the old consoles used. Volume envelopes can step in 4-bit increments at 60 frames a second, like the hardware.</p>
+      <div class="channels">
+        <article class="ch" style="--c:var(--ch-p1)"><canvas data-wave="pulse" aria-hidden="true"></canvas><h3><i></i>Pulse</h3><p>Leads and arps with the classic hollow-to-buzzy square sound.</p><span class="spec">DUTY 12.5 · 25 · 50 · 75%</span></article>
+        <article class="ch" style="--c:var(--ch-tri)"><canvas data-wave="tri" aria-hidden="true"></canvas><h3><i></i>Triangle</h3><p>The stepped triangle behind every great console bassline.</p><span class="spec">32 STEPS · 4-BIT</span></article>
+        <article class="ch" style="--c:var(--ch-wave)"><canvas data-wave="wave" aria-hidden="true"></canvas><h3><i></i>Wave</h3><p>Draw your own waveform with the mouse, or start from organ, saw or buzz.</p><span class="spec">32 SAMPLES · 16 LEVELS</span></article>
+        <article class="ch" style="--c:var(--ch-noise)"><canvas data-wave="noise" aria-hidden="true"></canvas><h3><i></i>Noise</h3><p>A real linear-feedback shift register for hats, snares, risers and surf.</p><span class="spec">15-BIT LFSR · WHITE / METALLIC</span></article>
+        <article class="ch" style="--c:var(--ch-drum)"><canvas data-wave="kick" aria-hidden="true"></canvas><h3><i></i>Retro drums</h3><p>Kick, snare, clap, hats, toms and crash, with tune, decay and crunch.</p><span class="spec">8 VOICES · BITCRUSH 3–16</span></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="workflow">
+    <div class="wrap">
+      <p class="eyebrow">THE WORKFLOW</p>
+      <h2>Everything you need to finish a track</h2>
+      <p class="intro">Sketch a loop in a minute, then arrange it into a song and render it out.</p>
+      <div class="feats">
+        <div class="feat"><h3>Piano roll and step grid</h3><p>Draw, stretch and drag notes, with the other channels shown faintly behind. Drums get a step grid with accents and drag painting.</p></div>
+        <div class="feat"><h3>Patterns and a song chain</h3><p>Up to 16 patterns of 16, 32 or 64 steps. Drag them into order, and switch patterns live while looping.</p></div>
+        <div class="feat"><h3>Instrument controls</h3><p>Envelope, glide, pitch sweep, delayed vibrato and a chord arpeggiator up to 60 Hz, with presets like Hero Lead, Coin and Laser.</p></div>
+        <div class="feat"><h3>Play and record</h3><p>Play from the keyboard (<kbd>Z</kbd>–<kbd>M</kbd>, <kbd>Q</kbd>–<kbd>U</kbd>) or a MIDI controller. Record live while the song plays, or enter notes one step at a time.</p></div>
+        <div class="feat"><h3>Mixer and master</h3><p>Volume, pan, mute, solo and meters on every channel. A tempo-synced echo, tone filter, compressor, swing and a metronome.</p></div>
+        <div class="feat"><h3>Save and export</h3><p>Projects save themselves in your browser. Keep them as <code>.json</code> files, and export the whole song as a 44.1 kHz, 16-bit WAV.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="local" class="local">
+    <div class="wrap grid">
+      <div>
+        <p class="eyebrow">OFFLINE</p>
+        <h2>Run it on your own machine</h2>
+        <p class="intro" style="margin:0">The launcher is one small Node script with no dependencies. It serves the studio on localhost and opens your browser.</p>
+      </div>
+      <pre><span class="c"># from npm</span>
+<span class="p">$</span> npx chipforge
+
+<span class="c"># from a clone of the repo</span>
+<span class="p">$</span> node cli.js --port 9000 --no-open</pre>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Chipforge is public domain (CC0). Built on the Web Audio API.</span>
+    <a href="https://github.com/chrismahoney/awesome-npx">Source on GitHub</a>
+  </div>
+</footer>
+
+<script>
+const btn = document.getElementById('copyCmd');
+btn.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText('npx chipforge'); btn.textContent = 'Copied'; }
+  catch (e) { const r = document.createRange(); r.selectNodeContents(document.getElementById('cmdText')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+  setTimeout(() => { btn.textContent = 'Copy'; }, 1600);
+});
+
+const organ = (() => { const raw = Array.from({ length: 32 }, (_, i) => { const x = 2 * Math.PI * i / 32; return Math.sin(x) + 0.5 * Math.sin(2 * x) + 0.33 * Math.sin(3 * x) + 0.2 * Math.sin(4 * x); }); const lo = Math.min(...raw), hi = Math.max(...raw); return raw.map(v => Math.round((v - lo) / (hi - lo) * 15)); })();
+const tables = {
+  pulse: Array.from({ length: 32 }, (_, i) => (i < 8 ? 15 : 0)),
+  tri: Array.from({ length: 32 }, (_, i) => (i < 16 ? 15 - i : i - 16)),
+  wave: organ,
+};
+function draw(cv) {
+  const kind = cv.dataset.wave, w = cv.clientWidth, h = cv.clientHeight, d = window.devicePixelRatio || 1;
+  cv.width = w * d; cv.height = h * d;
+  const x = cv.getContext('2d'); x.scale(d, d);
+  const color = getComputedStyle(cv.parentElement).getPropertyValue('--c').trim() || '#ffb547';
+  x.strokeStyle = 'rgba(255,255,255,.06)'; x.beginPath(); x.moveTo(0, h / 2); x.lineTo(w, h / 2); x.stroke();
+  x.strokeStyle = color; x.lineWidth = 2; x.shadowColor = color; x.shadowBlur = 6; x.beginPath();
+  const top = 10, bot = h - 10, y = v => bot - v / 15 * (bot - top);
+  if (tables[kind]) {
+    const t = tables[kind], cycles = 3, sw = w / cycles / t.length;
+    for (let c = 0; c < cycles; c++) t.forEach((v, i) => { const xx = (c * t.length + i) * sw; if (!c && !i) x.moveTo(xx, y(v)); else x.lineTo(xx, y(v)); x.lineTo(xx + sw, y(v)); });
+  } else if (kind === 'noise') {
+    let reg = 1; const n = 90, sw = w / n;
+    for (let i = 0; i < n; i++) { const bit = (reg ^ (reg >> 1)) & 1; reg = (reg >> 1) | (bit << 14); const v = reg & 1 ? 15 : 0; if (!i) x.moveTo(0, y(v)); else x.lineTo(i * sw, y(v)); x.lineTo((i + 1) * sw, y(v)); }
+  } else {
+    for (let i = 0; i <= w; i++) { const t = i / w, f = 3 + 22 * t * t, env = Math.exp(-3.2 * t); const v = 7.5 + 7.5 * env * Math.sin(2 * Math.PI * f * t * (1.8 - t)); const q = Math.round(v); i ? x.lineTo(i, y(q)) : x.moveTo(i, y(q)); }
+  }
+  x.stroke();
+}
+const all = () => document.querySelectorAll('canvas[data-wave]').forEach(draw);
+all();
+let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(all, 100); });
+</script>
+</body>
+</html>
