@@ -35,6 +35,8 @@ The launcher serves a single HTML page on `localhost` and opens it. Everything e
 - Piano roll with ghost notes from the other channels, drag-to-resize and drag-to-move.
 - Key and scale overlay (ten scales) with optional snap-to-scale, so every note you draw is in key.
 - Velocity lane under the roll, plus a Humanize button.
+- Selection: Shift+drag to select notes (Shift+click toggles), then drag to move them together, nudge with the arrow keys (Shift for octaves), Ctrl+C / X / V / D to copy, cut, paste and duplicate, Delete to remove.
+- Per-note effects: slide in, dive, rise, vibrato, staccato, ratchet, and major, minor or dominant-7th arpeggios.
 - Generators: Euclidean rhythms for any drum row, and a melody generator that respects your key, scale and density.
 - Drum step grid with accents and drag painting.
 - Patterns of 16, 32 or 64 steps, up to 16 patterns (A–P), and a drag-to-reorder song chain.
@@ -51,7 +53,7 @@ The launcher serves a single HTML page on `localhost` and opens it. Everything e
 - **Stems** renders each channel to its own WAV and zips them.
 - **Share** copies a link with the whole song packed into the URL.
 
-A demo song, *Neon Cavern*, loads on first run. Press <kbd>Space</kbd>.
+Two demo songs ship in the **Demos** menu: *Neon Cavern* (loads on first run) and *Boss Rush*, a 168 BPM harmonic-minor battle track. Press <kbd>Space</kbd>.
 
 ## License
 
