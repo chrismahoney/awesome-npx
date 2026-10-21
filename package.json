@@ -22,5 +22,13 @@
   "scripts": {
     "build": "node build.js",
     "start": "node cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrismahoney/chipforge.git"
+  },
+  "homepage": "https://github.com/chrismahoney/chipforge#readme",
+  "bugs": {
+    "url": "https://github.com/chrismahoney/chipforge/issues"
   }
 }
