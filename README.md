@@ -33,6 +33,9 @@ The launcher serves a single HTML page on `localhost` and opens it. Everything e
 
 **Editing**
 - Piano roll with ghost notes from the other channels, drag-to-resize and drag-to-move.
+- Key and scale overlay (ten scales) with optional snap-to-scale, so every note you draw is in key.
+- Velocity lane under the roll, plus a Humanize button.
+- Generators: Euclidean rhythms for any drum row, and a melody generator that respects your key, scale and density.
 - Drum step grid with accents and drag painting.
 - Patterns of 16, 32 or 64 steps, up to 16 patterns (A–P), and a drag-to-reorder song chain.
 - Copy/paste, transpose, rotate, and unlimited undo/redo.
@@ -45,6 +48,8 @@ The launcher serves a single HTML page on `localhost` and opens it. Everything e
 - Swing and a metronome.
 - Projects autosave in the browser. Save and open them as `.json`.
 - **Export WAV** renders the whole song chain offline at 44.1 kHz/16-bit.
+- **Stems** renders each channel to its own WAV and zips them.
+- **Share** copies a link with the whole song packed into the URL.
 
 A demo song, *Neon Cavern*, loads on first run. Press <kbd>Space</kbd>.
 
